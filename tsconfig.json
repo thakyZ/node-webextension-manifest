@@ -10,7 +10,8 @@
     "moduleResolution": "node",
     "noEmit": true,
     "strict": true,
-    "target": "es2018"
+    "target": "es2018",
+    "skipLibCheck": true
   },
   "exclude": [],
   "include": ["./index.d.ts", "./**/*.ts"]
