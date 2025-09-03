@@ -1,6 +1,6 @@
 import * as tsd from "tsd";
 
-import { ExcludeStrict, NonEmptyTuple, RequireAllOrNone, RequireExactlyOne } from "type-fest";
+import { NonEmptyTuple, RequireAllOrNone, RequireExactlyOne } from "type-fest";
 
 // RequireAllOrNone
 
@@ -58,12 +58,12 @@ tsd.expectNotAssignable<NumberXorString>({ n: 5, s: "" });
 
 type BadType = { bad: string; evil: number };
 
-tsd.expectAssignable<ExcludeStrict<BadType>>({});
-tsd.expectAssignable<any & ExcludeStrict<BadType>>({ good: "hello" });  // eslint-disable-line @typescript-eslint/no-explicit-any
-tsd.expectNotAssignable<ExcludeStrict<BadType>>({ bad: "fak u" });
-tsd.expectNotAssignable<ExcludeStrict<BadType>>({ evil: 666 });
-tsd.expectNotAssignable<ExcludeStrict<BadType>>({ bad: "fak u", evil: 666 });
-tsd.expectNotAssignable<any & ExcludeStrict<BadType>>({ bad: "fak u", evil: 666 });  // eslint-disable-line @typescript-eslint/no-explicit-any
+tsd.expectAssignable<Exclude<any, BadType>>({});  // eslint-disable-line @typescript-eslint/no-explicit-any
+tsd.expectAssignable<any & Exclude<any, BadType>>({ good: "hello" });  // eslint-disable-line @typescript-eslint/no-explicit-any
+tsd.expectNotAssignable<Exclude<any, BadType>>({ bad: "fak u" });  // eslint-disable-line @typescript-eslint/no-explicit-any
+tsd.expectNotAssignable<Exclude<any, BadType>>({ evil: 666 });  // eslint-disable-line @typescript-eslint/no-explicit-any
+tsd.expectNotAssignable<Exclude<any, BadType>>({ bad: "fak u", evil: 666 });  // eslint-disable-line @typescript-eslint/no-explicit-any
+tsd.expectNotAssignable<any & Exclude<any, BadType>>({ bad: "fak u", evil: 666 });  // eslint-disable-line @typescript-eslint/no-explicit-any
 
 // NonEmptyTuple
 
