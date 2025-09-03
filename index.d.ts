@@ -1,8 +1,8 @@
 import { CssColorString } from "./types/css";
 import { RequireExactlyOne, RequireAllOrNone, NonEmptyTuple } from "type-fest";
 
-type Manifest = {
-  manifest_version: ManifestVersion;
+interface Manifest<TVersion extends ManifestVersion = ManifestVersion> {
+  manifest_version: TVersion;
   author?: Author;
   background?: Background;
   browser_specific_settings?: BrowserSpecificSettings;
@@ -44,19 +44,18 @@ type Manifest = {
   web_accessible_resources?: WebAccessibleResources;
 }
 
-export type ManifestV3 = {
+export interface ManifestV3 extends Manifest<3> {
   action?: Action;
   host_permissions?: HostPermissions;
-  manifest_version: 3;
   optional_host_permissions?: OptionalHostPermissions;
-} & Manifest;
+}
 
-export type ManifestV2 = {
+export interface ManifestV2 extends Manifest<2> {
   browser_action?: BrowserAction;
   manifest_version: 2;
   page_action?: PageAction;
   user_scripts?: UserScripts;
-} & Manifest;
+}
 
 export default Manifest;
 

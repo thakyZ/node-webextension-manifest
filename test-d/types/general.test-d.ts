@@ -1,10 +1,10 @@
 import * as tsd from "tsd";
 
-import { AllOrNothing, Either, NonEmptyArray, NothingFrom } from "../../types/general";
+import { ExcludeStrict, NonEmptyTuple, RequireAllOrNone, RequireExactlyOne } from "type-fest";
 
-// AllOrNothing
+// RequireAllOrNone
 
-type NumberAndStringOrNothing = AllOrNothing<{ n: number; s: string }>;
+type NumberAndStringOrNothing = RequireAllOrNone<{ n: number; s: string }>;
 
 tsd.expectAssignable<NumberAndStringOrNothing>({});
 tsd.expectAssignable<NumberAndStringOrNothing>({ n: 0, s: "" });
@@ -16,11 +16,9 @@ type HtmlAndCss = {
   css: string;
 };
 
-type AppWithOptionalEverything = AllOrNothing<
-  HtmlAndCss & {
-    run?: (html: string, css: string) => void;
-  }
->;
+type AppWithOptionalEverything = RequireAllOrNone<HtmlAndCss> & {
+  run?: (html: string, css: string) => void;
+};
 
 type AppWithOptionalRun = AppWithOptionalEverything & HtmlAndCss;
 
@@ -47,27 +45,27 @@ tsd.expectNotAssignable<AppWithOptionalRun>({ run });
 tsd.expectNotAssignable<AppWithOptionalRun>({ html, run });
 tsd.expectNotAssignable<AppWithOptionalRun>({ css, run });
 
-// Either
+// RequireExactlyOne
 
-type NumberXorString = Either<{ n: number }, { s: string }>;
+type NumberXorString = RequireExactlyOne<{ n: number, s: string }>;
 
 tsd.expectAssignable<NumberXorString>({ n: 0 });
 tsd.expectAssignable<NumberXorString>({ s: "" });
 tsd.expectNotAssignable<NumberXorString>({});
 tsd.expectNotAssignable<NumberXorString>({ n: 5, s: "" });
 
-// NothingFrom
+// ExcludeStrict
 
 type BadType = { bad: string; evil: number };
 
-tsd.expectAssignable<NothingFrom<BadType>>({});
-tsd.expectAssignable<any & NothingFrom<BadType>>({ good: "hello" });
-tsd.expectNotAssignable<NothingFrom<BadType>>({ bad: "fak u" });
-tsd.expectNotAssignable<NothingFrom<BadType>>({ evil: 666 });
-tsd.expectNotAssignable<NothingFrom<BadType>>({ bad: "fak u", evil: 666 });
-tsd.expectNotAssignable<any & NothingFrom<BadType>>({ bad: "fak u", evil: 666 });
+tsd.expectAssignable<ExcludeStrict<BadType>>({});
+tsd.expectAssignable<any & ExcludeStrict<BadType>>({ good: "hello" });  // eslint-disable-line @typescript-eslint/no-explicit-any
+tsd.expectNotAssignable<ExcludeStrict<BadType>>({ bad: "fak u" });
+tsd.expectNotAssignable<ExcludeStrict<BadType>>({ evil: 666 });
+tsd.expectNotAssignable<ExcludeStrict<BadType>>({ bad: "fak u", evil: 666 });
+tsd.expectNotAssignable<any & ExcludeStrict<BadType>>({ bad: "fak u", evil: 666 });  // eslint-disable-line @typescript-eslint/no-explicit-any
 
-// NonEmptyArray
+// NonEmptyTuple
 
-tsd.expectAssignable<NonEmptyArray<number>>([1]);
-tsd.expectNotAssignable<NonEmptyArray<number>>([]);
+tsd.expectAssignable<NonEmptyTuple<number>>([1]);
+tsd.expectNotAssignable<NonEmptyTuple<number>>([]);
