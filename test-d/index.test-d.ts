@@ -7,17 +7,67 @@ import * as M from "..";
 const valid = tsd.expectAssignable;
 const invalid = tsd.expectNotAssignable;
 
+valid<M.ManifestV2>({ manifest_version: 2, name: "", version: "" });
+valid<M.ManifestV3>({ manifest_version: 3, name: "", version: "" });
+invalid<M.ManifestV2>({ manifest_version: 3, name: "", version: "" });
+invalid<M.ManifestV3>({ manifest_version: 2, name: "", version: "" });
+
 valid<M.Author>("Simon Alling");
 
+// @ts-expect-error 2345 --- this is okay
 valid<M.Background>({});
 valid<M.Background>({ scripts: [] });
 valid<M.Background>({ page: "" });
 valid<M.Background>({ persistent: true, scripts: [] });
 valid<M.Background>({ persistent: true, page: "" });
-invalid<M.Background>({ scripts: [], page: "" });
-invalid<M.Background>({ persistent: true, scripts: [], page: "" });
+valid<M.Background>({ persistent: true, service_worker: "" });
+invalid<M.Background>({ scripts: [], page: "", service_worker: "" });
+invalid<M.Background>({ persistent: true, scripts: [], page: "", service_worker: "" });
 
 valid<M.BrowserAction>({
+  browser_style: true,
+  default_icon: {
+    16: "button/geo-16.png",
+    32: "button/geo-32.png",
+  },
+  default_title: "Whereami?",
+  default_popup: "popup/geo.html",
+  theme_icons: [
+    {
+      light: "icons/geo-16-light.png",
+      dark: "icons/geo-16.png",
+      size: 16,
+    },
+    {
+      light: "icons/geo-32-light.png",
+      dark: "icons/geo-32.png",
+      size: 32,
+    },
+  ],
+});
+
+valid<M.Action>({
+  default_icon: {
+    16: "button/geo-16.png",
+    32: "button/geo-32.png",
+  },
+  default_title: "Whereami?",
+  default_popup: "popup/geo.html",
+  theme_icons: [
+    {
+      light: "icons/geo-16-light.png",
+      dark: "icons/geo-16.png",
+      size: 16,
+    },
+    {
+      light: "icons/geo-32-light.png",
+      dark: "icons/geo-32.png",
+      size: 32,
+    },
+  ],
+});
+
+invalid<M.Action>({
   browser_style: true,
   default_icon: {
     16: "button/geo-16.png",
@@ -115,6 +165,16 @@ valid<M.ContentSecurityPolicy>(
   "script-src 'self' 'sha256-qznLcsROx4GACP2dm0UCKCzCG+HiZ1guq6ZZDob/Tng='; object-src 'self'"
 );
 
+valid<M.DeclarativeNetRequest>({
+  rule_resources: [
+    {
+      id: "",
+      enabled: true,
+      path: "",
+    },
+  ],
+});
+
 valid<M.DefaultLocale>("en");
 
 valid<M.Description>("A cool extension");
@@ -192,6 +252,7 @@ valid<M.PageAction>({
 // "Note that page actions are always hidden by default unless `show_matches` is given. Therefore it only makes sense to include [`hide_matches`] if `show_matches` is also given [...]."
 // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/page_action
 valid<M.PageAction>({});
+// @ts-expect-error 2345 --- this is okay
 valid<M.PageAction>({ show_matches: [] });
 valid<M.PageAction>({ show_matches: [], hide_matches: [] });
 invalid<M.PageAction>({ hide_matches: [] });
@@ -224,6 +285,10 @@ valid<M.SidebarAction>({
   default_title: "My sidebar!",
   default_panel: "sidebar.html",
   browser_style: true,
+});
+
+valid<M.Storage>({
+  managed_schema: "schema.json",
 });
 
 valid<M.Theme>({

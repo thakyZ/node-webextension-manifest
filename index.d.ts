@@ -1,16 +1,17 @@
 import { CssColorString } from "./types/css";
-import { AllOrNothing, Either, NonEmptyArray } from "./types/general";
+import { RequireExactlyOne, RequireAllOrNone, NonEmptyTuple } from "type-fest";
 
 type Manifest = {
+  manifest_version: ManifestVersion;
   author?: Author;
   background?: Background;
-  browser_action?: BrowserAction;
   browser_specific_settings?: BrowserSpecificSettings;
   chrome_settings_overrides?: ChromeSettingsOverrides;
   chrome_url_overrides?: ChromeUrlOverrides;
   commands?: Commands;
   content_scripts?: ContentScripts;
   content_security_policy?: ContentSecurityPolicy;
+  declarative_net_request?: DeclarativeNetRequest;
   /**
    * This key must be present if the extension contains the _locales directory, and must be absent otherwise. It identifies a subdirectory of _locales, and this subdirectory will be used to find the default strings for your extension.
    */
@@ -25,38 +26,75 @@ type Manifest = {
   incognito?: Incognito;
   // should only for development builds
   key?: Key;
-  manifest_version: ManifestVersion;
   name: Name;
   offline_enabled?: OfflineEnabled;
   omnibox?: Omnibox;
   optional_permissions?: OptionalPermissions;
   // options_page omitted because it is deprecated in favor of `options_ui`
   options_ui?: OptionsUi;
-  page_action?: PageAction;
   permissions?: Permissions;
   protocol_handlers?: ProtocolHandlers;
   short_name?: ShortName;
   sidebar_action?: SidebarAction;
+  storage?: Storage;
   theme?: Theme;
   theme_experiment?: ThemeExperiment;
-  user_scripts?: UserScripts;
   version: Version;
   version_name?: VersionName;
   web_accessible_resources?: WebAccessibleResources;
-};
+}
+
+export type ManifestV3 = {
+  action?: Action;
+  host_permissions?: HostPermissions;
+  manifest_version: 3;
+  optional_host_permissions?: OptionalHostPermissions;
+} & Manifest;
+
+export type ManifestV2 = {
+  browser_action?: BrowserAction;
+  manifest_version: 2;
+  page_action?: PageAction;
+  user_scripts?: UserScripts;
+} & Manifest;
 
 export default Manifest;
 
 export type Author = string;
 
+export type PreferredEnvironment = "document" | "service_worker";
+
+export type ScriptType = "classic" | "module";
+
 export type Background = {
   persistent?: boolean;
-} & Either<
-  { scripts?: string[] },
+  preferred_environment?: PreferredEnvironment[];
+  type?: ScriptType;
+} & RequireExactlyOne<{
+  scripts?: string[];
   // "If you use [`page`], you can not specify background scripts using `scripts`, but you can include your own scripts from the page, just like in a normal web page."
   // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/background
-  { page?: string }
->;
+  page?: string;
+  service_worker?: string;
+}>;
+
+export type DeclarativeNetRequest = {
+  rule_resources: NonEmptyTuple<RuleResource>;
+};
+
+export type RuleResource = {
+  id: string;
+  enabled: boolean;
+  path: string;
+}
+
+export type Storage = {
+  managed_schema?: string;
+};
+
+export type HostPermissions = string[];
+
+export type OptionalHostPermissions = HostPermissions;
 
 // "The `browser_action` key is an object that may have any of the following properties, all optional:"
 // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/browser_action
@@ -66,8 +104,24 @@ export type BrowserAction = {
   default_icon?: string | IconsObject;
   default_popup?: string;
   default_title?: string;
-  theme_icons?: NonEmptyArray<ThemeIcons>; // "If this property is present, it's an array containing at least one `ThemeIcons` object."
+  theme_icons?: NonEmptyTuple<ThemeIcons>; // "If this property is present, it's an array containing at least one `ThemeIcons` object."
 };
+
+// "The `action` key is an object that may have any of the following properties, all optional:"
+// https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/action
+export type Action = {
+  /**
+   * Do not set `browser_style` to `true`: its support in Manifest V3 was removed in Firefox 118. See Manifest V3 migration for browser_style.
+   * @see https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/user_interface/Browser_styles#manifest_v3_migration
+   */
+  browser_style?: never;
+  default_area?: "menupanel" | "navbar" | "personaltoolbar" | "tabstrip";
+  default_icon?: string | IconsObject;
+  default_popup?: string;
+  default_title?: string;
+  theme_icons?: NonEmptyTuple<ThemeIcons>; // "If this property is present, it's an array containing at least one `ThemeIcons` object."
+};
+
 
 export type PageAction = {
   browser_style?: boolean;
@@ -76,7 +130,7 @@ export type PageAction = {
   default_title?: string;
   pinned?: boolean;
   show_matches?: string[];
-} & AllOrNothing<{
+} & RequireAllOrNone<{
   show_matches: string[];
   /**
    * Note that page actions are always hidden by default unless `show_matches` is given. Therefore it only makes sense to include `hide_matches` if `show_matches` is also given [...].
@@ -199,7 +253,7 @@ export type Key = string;
 
 // "Currently, this must always be 2."
 // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/manifest_version
-export type ManifestVersion = 2;
+export type ManifestVersion = 2 | 3;
 
 export type Name = string;
 
