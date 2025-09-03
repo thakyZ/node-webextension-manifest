@@ -362,4 +362,8 @@ valid<M.Version>("1.0.0");
 
 valid<M.VersionName>("0.1 beta");
 
-valid<M.WebAccessibleResources>(["images/my-image.png"]);
+valid<M.WebAccessibleResourcesV2>(["images/my-image.png"]);
+invalid<M.WebAccessibleResourcesV2>([{ matches: ["https://*.example.com/*"], resources: ["src/*.js"] }]);
+
+valid<M.WebAccessibleResourcesV3>([{ matches: ["https://*.example.com/*"], resources: ["src/*.js"] }]);
+valid<M.WebAccessibleResourcesV3>(["images/my-image.png"]);

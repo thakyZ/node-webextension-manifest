@@ -1,5 +1,5 @@
 import { Property } from "csstype";
-import { RequireOneOrNone, RequireAllOrNone, NonEmptyTuple } from "type-fest";
+import { NonEmptyTuple, RequireOneOrNone, RequireAllOrNone, SetOptional } from "type-fest";
 
 interface Manifest<TVersion extends ManifestVersion = ManifestVersion> {
   manifest_version: TVersion;
@@ -41,7 +41,6 @@ interface Manifest<TVersion extends ManifestVersion = ManifestVersion> {
   theme_experiment?: ThemeExperiment;
   version: Version;
   version_name?: VersionName;
-  web_accessible_resources?: WebAccessibleResources;
 }
 
 export interface ManifestV3 extends Manifest<3> {
@@ -56,6 +55,7 @@ export interface ManifestV2 extends Manifest<2> {
   manifest_version: 2;
   page_action?: PageAction;
   user_scripts?: UserScripts;
+  web_accessible_resources?: WebAccessibleResourcesV2;
 }
 
 export default Manifest;
@@ -467,10 +467,10 @@ export type Version = string;
 
 export type VersionName = string;
 
-export type WebAccessibleResources = string[];
+export type WebAccessibleResourcesV2 = string[];
 
-export type WebAccessibleResourcesV3 = WebAccessibleResources | {
+export type WebAccessibleResourcesV3 = (string | {
   resources: string[];
   matches: string[];
   use_dynamic_url?: boolean;
-};
+})[];
