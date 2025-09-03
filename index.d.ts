@@ -1,5 +1,5 @@
-import { CssColorString } from "./types/css";
-import { RequireExactlyOne, RequireAllOrNone, NonEmptyTuple } from "type-fest";
+import { Property } from "csstype";
+import { RequireOneOrNone, RequireAllOrNone, NonEmptyTuple } from "type-fest";
 
 interface Manifest<TVersion extends ManifestVersion = ManifestVersion> {
   manifest_version: TVersion;
@@ -69,7 +69,7 @@ export type Background = {
   persistent?: boolean;
   preferred_environment?: PreferredEnvironment[];
   type?: ScriptType;
-} & RequireExactlyOne<{
+} & RequireOneOrNone<{
   scripts?: string[];
   // "If you use [`page`], you can not specify background scripts using `scripts`, but you can include your own scripts from the page, just like in a normal web page."
   // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/background
@@ -129,13 +129,13 @@ export type PageAction = {
   default_title?: string;
   pinned?: boolean;
   show_matches?: string[];
-} & RequireAllOrNone<{
+} & SetOptional<RequireAllOrNone<{
   show_matches: string[];
   /**
    * Note that page actions are always hidden by default unless `show_matches` is given. Therefore it only makes sense to include `hide_matches` if `show_matches` is also given [...].
    */
   hide_matches?: string[];
-}>;
+}>, "hide_matches">;
 
 type ThemeIcons = {
   dark: string;
@@ -422,7 +422,7 @@ type ThemeColors = {
   toolbar_vertical_separator?: ThemeColor;
 };
 
-type ThemeColor = CssColorString;
+type ThemeColor = Property.Color;
 
 type ThemeProperties = {
   additional_backgrounds_alignment?: BackgroundAlignment[];

@@ -14,7 +14,6 @@ invalid<M.ManifestV3>({ manifest_version: 2, name: "", version: "" });
 
 valid<M.Author>("Simon Alling");
 
-// @ts-expect-error 2345 --- this is okay
 valid<M.Background>({});
 valid<M.Background>({ scripts: [] });
 valid<M.Background>({ page: "" });
@@ -252,7 +251,6 @@ valid<M.PageAction>({
 // "Note that page actions are always hidden by default unless `show_matches` is given. Therefore it only makes sense to include [`hide_matches`] if `show_matches` is also given [...]."
 // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/manifest.json/page_action
 valid<M.PageAction>({});
-// @ts-expect-error 2345 --- this is okay
 valid<M.PageAction>({ show_matches: [] });
 valid<M.PageAction>({ show_matches: [], hide_matches: [] });
 invalid<M.PageAction>({ hide_matches: [] });
