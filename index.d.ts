@@ -48,6 +48,7 @@ export interface ManifestV3 extends Manifest<3> {
   action?: Action;
   host_permissions?: HostPermissions;
   optional_host_permissions?: OptionalHostPermissions;
+  web_accessible_resources?: WebAccessibleResourcesV3;
 }
 
 export interface ManifestV2 extends Manifest<2> {
@@ -467,3 +468,9 @@ export type Version = string;
 export type VersionName = string;
 
 export type WebAccessibleResources = string[];
+
+export type WebAccessibleResourcesV3 = WebAccessibleResources | {
+  resources: string[];
+  matches: string[];
+  use_dynamic_url?: boolean;
+};
