@@ -1,8 +1,8 @@
 import * as tsd from "tsd";
 
-import Manifest from "..";
+import { ManifestV2 } from "..";
 
-tsd.expectAssignable<Manifest<2>>({
+tsd.expectAssignable<ManifestV2>({
   browser_specific_settings: {
     gecko: {
       id: "addon@example.com",
